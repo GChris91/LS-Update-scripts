@@ -113,11 +113,11 @@ myFunction='backup'
 #COPY FROM VM TO HOST
 copyToHost(){
 
-    cmd="scp ${srcDir}${backedupFile} root@192.168.56.1:${backupDir}"
+    cmd="scp ${srcDir}${backedupFile} ${serverUser}@${server}:${backupDir}"
     echo "Copying ${srcDir}${backedupFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
-    cmd="scp -r ${srcDir}${uploadFile}upload/ ${srcDir}${configFile}/config root@192.168.56.1:${backupDir}"
+    cmd="scp -r ${srcDir}${uploadFile}upload/ ${srcDir}${configFile}/config ${serverUser}@${server}:${backupDir}"
     echo "Copying ${srcDir}${uploadFile} and ${srcDir}${configFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
@@ -169,12 +169,49 @@ myFunction='sshHost'
 }
 
 
+#COPY UPDATE FILE FROM HOST TO SERVER
+copyUpdateToServer(){
+
+MyFunction='copyUpdateToServer'
+
+    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
+    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+
+    status=$?
+    error;
+
+}
+
+
+#COPY SAVED FILES FROM HOST TO SERVER
+copyFilesToServer(){
+
+MyFunction='copyFilesToServer'
+
+    cmd="scp /home/gchris/limesurvey.backups/upload/ ${serverUser}@${server}:${srcDir}/limesurvey"
+    echo "Copying upload directory to Server ${srcDir} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+
+    cmd="scp /home/gchris/limesurvey.backups/config/ ${serverUser}@${server}:${srcDir}/limesurvey/application"
+    echo "Copying config directory to Server ${srcDir} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+
+    status=$?
+    error;
+
+}
+
+
 #COPY FROM HOST TO SERVER
 copyToServer(){
 
 MyFunction='copyToServer'
 
-    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@:${server}${srcDir}"
+    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
     echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
@@ -222,7 +259,7 @@ replaceFiles(){
 
 myFunction='replaceFiles'
 
-    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@:${server}${srcDir}"
+    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
     echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
@@ -240,7 +277,7 @@ callSh(){
 
 #    if [ -z "${1}" ]; then
 
-    cmd="ssh gchris@192.168.56.1 `bash -s` < /home/gchris/limesurvey.backups/sendFiles.sh"
+    cmd="ssh ${hostUser}@${host} 'bash -s' < /home/gchris/limesurvey.backups/sendUpdateFile.sh"
     echo "Calling script ${script} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
