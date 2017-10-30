@@ -39,17 +39,17 @@ mailAlert(){
 }
 
 
-#GET TIMESTAMP
-timestamp(){
-
-    date +"%T"
-}
-
-
 #GET DATESTAMP
 datestamp(){
  
     date +"%Y.%m.%d"
+}
+
+
+#GET TIMESTAMP
+timestamp(){
+
+    date +"%T"
 }
 
 
@@ -110,6 +110,24 @@ myFunction='backup'
 }
 
 
+#COPY FROM VM TO HOST
+copyToHost(){
+
+    cmd="scp ${srcDir}${backedupFile} root@192.168.56.1:${backupDir}"
+    echo "Copying ${srcDir}${backedupFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+    cmd="scp -r ${srcDir}${uploadFile}upload/ ${srcDir}${configFile}/config root@192.168.56.1:${backupDir}"
+    echo "Copying ${srcDir}${uploadFile} and ${srcDir}${configFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+
+    status=$?
+    error;
+
+}
+
+
 #REMOVE DIRECTORY
 removeDir(){
 
@@ -133,6 +151,38 @@ myFunction='removeDir'
     else
         echo "Could not delete directory" >&2 >> ${log}
     fi
+
+}
+
+
+#CONNECT TO HOST IN SSH
+sshHost(){
+
+myFunction='sshHost'
+
+    ssh ${hostUser}@${host}
+
+    
+    status=$?
+    error;
+
+}
+
+
+#COPY FROM HOST TO SERVER
+copyToServer(){
+
+MyFunction='copyToServer'
+
+    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@:${server}${srcDir}"
+    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+    #disconnect ssh
+
+
+    status=$?
+    error;
 
 }
 
@@ -167,43 +217,10 @@ myFunction='extract'
 
 }
 
+#REPLACES FILES CONFIG AND UPLOAD
+replaceFiles(){
 
-#COPY FROM VM TO HOST
-copyToHost(){
-
-    cmd="scp ${srcDir}${backedupFile} root@192.168.56.1:${backupDir}"
-    echo "Copying ${srcDir}${backedupFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-    cmd="scp -r ${srcDir}${uploadFile}upload/ ${srcDir}${configFile}/config root@192.168.56.1:${backupDir}"
-    echo "Copying ${srcDir}${uploadFile} and ${srcDir}${configFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-
-    status=$?
-    error;
-
-}
-
-
-#CONNECT TO HOST IN SSH
-sshHost(){
-
-myFunction='sshHost'
-
-    ssh ${hostUser}@${host}
-
-    
-    status=$?
-    error;
-
-}
-
-
-#COPY FROM HOST TO SERVER
-copyToServer(){
-
-MyFunction='copyToServer'
+myFunction='replaceFiles'
 
     cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@:${server}${srcDir}"
     echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
@@ -211,36 +228,37 @@ MyFunction='copyToServer'
 
     #disconnect ssh
 
-status=$?
-error;
 
- }
-                                
+    status=$?
+    error;
 
+}                          
 
 
 #CALL SCRIPT
-#callSh(){
-#
+callSh(){
+
 #    if [ -z "${1}" ]; then
-#
-#        cmd="./${script}"
-#        echo "Calling script ${script} : ${cmd}"
-#
+
+    cmd="ssh gchris@192.168.56.1 `bash -s` < /home/gchris/limesurvey.backups/sendFiles.sh"
+    echo "Calling script ${script} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+
 #    else cmd="./${1}"
 #        echo "Calling script ${1} : ${cmd}"
 #    fi
-#
-#    eval ${cmd}
-#    
-#    if [ $? -eq 0 ]; then
-#        echo "Successfully started scrit" >> ${log}
-#    
-#    else
-#        echo "Could not start script" >&2 >> ${log}
-#    fi
-#
-#}
+
+    eval ${cmd}
+    
+    if [ $? -eq 0 ]; then
+        echo "Successfully started script" >> ${log}
+    
+    else
+        echo "Could not start script" >&2 >> ${log}
+    fi
+
+}
 
 
 

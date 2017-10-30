@@ -35,10 +35,13 @@ cd /var/www/
 . scripts/config.sh
 
 #backup
-#
-#
-#
-
+#copyToHost
+#removeDir
+#sshHost
+#copyToServer
+#extract
+#replaceFiles
+callSh
 
 echo Fini >> ${log}
 
