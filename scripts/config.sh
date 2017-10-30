@@ -32,7 +32,7 @@
 #GLOBALES
 
 export server=`hostname -s`
-export log=/tmp/${0}.log
+export log=/tmp/$(basename ${0}).log
 export adminMail="christophe.guerreschi@etudiant.univ-nc.nc"
 
 export mailSubject="[$(datestamp)-$(timestamp)] Error: LimeSurvey Update."

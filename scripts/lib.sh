@@ -88,7 +88,7 @@ myFunction='backup'
     #Compress/Archive LimeSurvey File
 #    if [ -z "${1}" ]; then
 
-        cmd="tar -czvf ${backedupFile} ${desDir}limesurvey"
+        cmd="tar -czf ${backedupFile} ${desDir}limesurvey"
         echo "Backing up ${backedupFile} to ${dstDir} : ${cmd} >> ${log}"
         eval ${cmd} >> ${log} 2>&1
         
@@ -113,17 +113,17 @@ myFunction='backup'
 #COPY FROM VM TO HOST
 copyToHost(){
 
-    cmd="scp ${srcDir}${backedupFile} ${serverUser}@${server}:${backupDir}"
+    cmd="scp ${srcDir}${backedupFile} ${hostUser}@${host}:${backupDir}"
     echo "Copying ${srcDir}${backedupFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
-    cmd="scp -r ${srcDir}${uploadFile}upload/ ${srcDir}${configFile}/config ${serverUser}@${server}:${backupDir}"
-    echo "Copying ${srcDir}${uploadFile} and ${srcDir}${configFile} to Host Machine ${backupDir} : ${cmd} >> ${log}"
+    cmd="scp -r ${srcDir}${uploadFile}upload/ ${srcDir}${configFile}config/ ${hostUser}@${host}:${backupDir}"
+    echo "Copying ${srcDir}${uploadFile}upload/ and ${srcDir}${configFile}config/ to Host Machine ${backupDir} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
 
-    status=$?
-    error;
+#    status=$?
+#    error;
 
 }
 
@@ -136,7 +136,7 @@ myFunction='removeDir'
 #    if [ -z "${1}" ]; then
 
         cmd="rm -Rf ${srcDir}limesurvey/"
-        echo "Removing ${srcDir}/limesurvey/ directory : ${cmd} >> ${log}"
+        echo "Removing ${srcDir}limesurvey/ directory : ${cmd} >> ${log}"
 
 #    else
 #        cmd="rm -Rf ${1}"
@@ -155,73 +155,41 @@ myFunction='removeDir'
 }
 
 
-#CONNECT TO HOST IN SSH
-sshHost(){
-
-myFunction='sshHost'
-
-    ssh ${hostUser}@${host}
-
-    
-    status=$?
-    error;
-
-}
-
-
-#COPY UPDATE FILE FROM HOST TO SERVER
-copyUpdateToServer(){
-
-MyFunction='copyUpdateToServer'
-
-    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
-    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-
-    status=$?
-    error;
-
-}
-
-
-#COPY SAVED FILES FROM HOST TO SERVER
-copyFilesToServer(){
-
-MyFunction='copyFilesToServer'
-
-    cmd="scp /home/gchris/limesurvey.backups/upload/ ${serverUser}@${server}:${srcDir}/limesurvey"
-    echo "Copying upload directory to Server ${srcDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-
-    cmd="scp /home/gchris/limesurvey.backups/config/ ${serverUser}@${server}:${srcDir}/limesurvey/application"
-    echo "Copying config directory to Server ${srcDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-
-    status=$?
-    error;
-
-}
-
-
-#COPY FROM HOST TO SERVER
-copyToServer(){
-
-MyFunction='copyToServer'
-
-    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
-    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-    #disconnect ssh
-
-
-    status=$?
-    error;
-
-}
+##COPY UPDATE FILE FROM HOST TO SERVER
+#copyUpdateToServer(){
+#
+#MyFunction='copyUpdateToServer'
+#
+#    cmd="scp /home/gchris/Téléchargements/${updateFile} ${hostUser}@${host}:${srcDir}"
+#    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
+#    eval ${cmd} >> ${log} 2>&1
+#
+#
+#    status=$?
+#    error;
+#
+#}
+#
+#
+##COPY SAVED FILES FROM HOST TO SERVER
+#copyFilesToServer(){
+#
+#MyFunction='copyFilesToServer'
+#
+#    cmd="scp /home/gchris/limesurvey.backups/upload/ ${serverUser}@${server}:${srcDir}/limesurvey"
+#    echo "Copying upload directory to Server ${srcDir} : ${cmd} >> ${log}"
+#    eval ${cmd} >> ${log} 2>&1
+#
+#
+#    cmd="scp /home/gchris/limesurvey.backups/config/ ${serverUser}@${server}:${srcDir}/limesurvey/application"
+#    echo "Copying config directory to Server ${srcDir} : ${cmd} >> ${log}"
+#    eval ${cmd} >> ${log} 2>&1
+#
+#
+#    status=$?
+#    error;
+#
+#}
 
 
 #EXTRACT ARCHIVE
@@ -231,14 +199,14 @@ myFunction='extract'
 
 #    if [ -z "${1}" ]; then
 
-        cmd="tar -xvf ${srcDir}${updateFile}"
-        echo "Extracting ${updateFile} to ${srcDir} : ${cmd}"
+        cmd="tar -xzf ${srcDir}${updateFile} limesurvey/"
+        echo "Extracting ${updateFile} to ${srcDir} : ${cmd} >> ${log}"
 
 #    else cmd="cd / && tar -xvf ${SRCDIR}${1}"
 #        echo "Extracting ${SRCDIR}${1} : ${cmd}"
 #    fi
 
-    eval ${cmd}
+    eval ${cmd} >> ${log} 2>&1
     
     
     if [ $? -eq 0 ]; then
@@ -254,30 +222,33 @@ myFunction='extract'
 
 }
 
-#REPLACES FILES CONFIG AND UPLOAD
-replaceFiles(){
+##REPLACES FILES CONFIG AND UPLOAD
+#replaceFiles(){
+#
+#myFunction='replaceFiles'
+#
+#    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
+#    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
+#    eval ${cmd} >> ${log} 2>&1
+#
+#    #disconnect ssh
+#
+#
+#    status=$?
+#    error;
+#
+#}                          
 
-myFunction='replaceFiles'
 
-    cmd="scp /home/gchris/Téléchargements/${updateFile} ${serverUser}@${server}:${srcDir}"
-    echo "Copying ${updateFile} to Server ${srcDir} : ${cmd} >> ${log}"
-    eval ${cmd} >> ${log} 2>&1
-
-    #disconnect ssh
-
-
-    status=$?
-    error;
-
-}                          
-
-
-#CALL SCRIPT
-callSh(){
+#CALL SCRIPT sendUpdateFiles.sh
+callSendUpdateFile(){
 
 #    if [ -z "${1}" ]; then
 
-    cmd="ssh ${hostUser}@${host} 'bash -s' < /home/gchris/limesurvey.backups/sendUpdateFile.sh"
+    cmd="ssh ${hostUser}@${host} '/home/gchris/limesurvey.backups/sendUpdateFile.sh'"
+
+
+#    cmd="ssh ${hostUser}@${host} 'bash -s' < /home/gchris/limesurvey.backups/sendUpdateFile.sh"
     echo "Calling script ${script} : ${cmd} >> ${log}"
     eval ${cmd} >> ${log} 2>&1
 
@@ -289,15 +260,41 @@ callSh(){
     eval ${cmd}
     
     if [ $? -eq 0 ]; then
-        echo "Successfully started script" >> ${log}
+        echo "Successfully started script sendUpdateFile.sh" >> ${log}
     
     else
-        echo "Could not start script" >&2 >> ${log}
+        echo "Could not start script sendUpdateFile.sh" >&2 >> ${log}
     fi
 
 }
 
 
+#CALL SCRIPT replaceFiles.sh
+callReplaceFiles(){
+
+#    if [ -z "${1}" ]; then
+
+    cmd="ssh ${hostUser}@${host} '/home/gchris/limesurvey.backups/replaceFiles.sh'"
+
+#    cmd="ssh ${hostUser}@${host} 'bash -s' < /home/gchris/limesurvey.backups/replaceFiles.sh"
+    echo "Calling script ${script} : ${cmd} >> ${log}"
+    eval ${cmd} >> ${log} 2>&1
+
+
+#    else cmd="./${1}"
+#        echo "Calling script ${1} : ${cmd}"
+#    fi
+
+    eval ${cmd}
+    
+    if [ $? -eq 0 ]; then
+        echo "Successfully started script replaceFiles.sh" >> ${log}
+    
+    else
+        echo "Could not start script replaceFiles.sh" >&2 >> ${log}
+    fi
+
+}
 
 
 ############################

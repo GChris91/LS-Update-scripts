@@ -34,14 +34,12 @@ cd /var/www/
 . scripts/lib.sh
 . scripts/config.sh
 
-#backup
-#copyToHost
-#removeDir
-#sshHost
-#copyToServer
-#extract
-#replaceFiles
-callSh
+backup
+copyToHost
+removeDir
+callSendUpdateFile
+extract
+callReplaceFiles
 
 echo Fini >> ${log}
 
